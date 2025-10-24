@@ -9,7 +9,7 @@ EF = defaultdict(dict)
 
 # --- 讀取 CSV 數據並填充 EF 字典（只關注 'food' 類別）---
 try:
-    with open('emission_factors.csv', 'r', encoding='utf-8') as file:
+    with open('C:\\carbon\\emission_factors.csv', 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
             category = row['category']
