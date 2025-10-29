@@ -1,0 +1,11 @@
+category,key,value,unit,source,region,version
+food,beef,27.0,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,pork,12.1,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,chicken,6.9,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,fish,6.1,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,egg,4.5,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,tofu,2.0,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,vegetable,0.5,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,fruit,0.7,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,rice,2.7,kg CO2e/kg,Demo,GLOBAL,2025.1
+food,dairy,3.0,kg CO2e/kg,Demo,GLOBAL,2025.1

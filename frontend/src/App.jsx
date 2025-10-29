@@ -1,15 +1,16 @@
-// CarbonEstimateDemo.jsx
+// App.jsx
 import { useState } from "react";
 
-const API_BASE = "/api"; 
+const API_BASE = "/api";
 
-export default function CarbonEstimateDemo() {
+export default function App() {
   const [item, setItem] = useState("vegetable");
   const [amountKg, setAmountKg] = useState(0.5);
-  const [result, setResult] = useState(null);      // { kg_co2e, ef, ... }
+  const [result, setResult] = useState(null); // { kg_co2e, ef, ... }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 計算碳排
   const estimateFood = async (item, amount_kg) => {
     const res = await fetch(`${API_BASE}/estimate/food`, {
       method: "POST",
@@ -17,9 +18,10 @@ export default function CarbonEstimateDemo() {
       body: JSON.stringify({ item, amount_kg }),
     });
     if (!res.ok) throw new Error(`Estimate failed: ${res.status}`);
-    return res.json(); // expected: { kg_co2e, item, amount_kg, ef }
+    return res.json();
   };
 
+  // 儲存活動紀錄
   const createActivity = async ({ user_id, payload, kg_co2e }) => {
     const res = await fetch(`${API_BASE}/activities/create`, {
       method: "POST",
@@ -27,12 +29,29 @@ export default function CarbonEstimateDemo() {
       body: JSON.stringify({
         user_id,
         type: "food",
-        payload,      // e.g. { item, amount_kg, ef }
+        payload,
         kg_co2e,
       }),
     });
     if (!res.ok) throw new Error(`Create failed: ${res.status}`);
-    return res.json(); // expected: { status: "success", activity_id: ... }
+    return res.json();
+  };
+
+  // 取得暫存活動紀錄
+  const fetchActivities = async () => {
+    setError(""); setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/activities`);
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const data = await res.json();
+      console.log("暫存活動紀錄:", data);
+      alert(`暫存活動紀錄筆數: ${data.length} `);
+    } catch (e) {
+      console.error(e);
+      alert("取得活動紀錄失敗");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onCalculate = async () => {
@@ -49,7 +68,6 @@ export default function CarbonEstimateDemo() {
     }
   };
 
-  // 儲存活動紀錄到後端 目前後端尚未做這部分 [1024 沈]
   const onSave = async () => {
     if (!result) return;
     setError(""); setLoading(true);
@@ -73,7 +91,7 @@ export default function CarbonEstimateDemo() {
       <h2>Food 碳排試算</h2>
       <div className="form-row">
         <label>選擇食物種類：</label>
-        <select value={item} onChange={e=>setItem(e.target.value)}>
+        <select value={item} onChange={e => setItem(e.target.value)}>
           <option value="vegetable">vegetable</option>
           <option value="beef">beef</option>
           <option value="pork">pork</option>
@@ -84,25 +102,35 @@ export default function CarbonEstimateDemo() {
           type="number"
           step="0.1"
           value={amountKg}
-          onChange={e=>setAmountKg(e.target.value)}
+          onChange={e => setAmountKg(e.target.value)}
           min="0"
         />
       </div>
+
       <div style={{ marginTop: 12 }}>
-        <button onClick={onCalculate} disabled={loading}>計算碳排</button>
+        <button onClick={onCalculate} disabled={loading}>
+          計算碳排
+        </button>
         <button onClick={onSave} disabled={loading || !result}>
-          送出紀錄（/activities/create）
+          送出紀錄
+        </button>
+        <button onClick={fetchActivities} disabled={loading}>
+          查看暫存活動
         </button>
       </div>
 
-      {loading && <p>計算/寫入中…</p>}
-      {error && <p style={{color:"red"}}>{error}</p>}
+      {loading && <p>寫入中…</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       {result && (
         <div style={{ marginTop: 12, padding: 12, border: "1px solid #ddd" }}>
-          <div> CO₂e：<b>{result.kg_co2e}kg</b></div>
+          <div>
+            CO₂e：<b>{result.kg_co2e} kg</b>
+          </div>
           <div>EF(排放因子)：{result.ef}</div>
-          <small>輸入：{item} × {amountKg} kg</small>
+          <small>
+            輸入：{item} × {amountKg} kg
+          </small>
         </div>
       )}
     </div>
