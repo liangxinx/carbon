@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_BASE = "/api"; // ⚠️ 跟 App.jsx 一樣的 base
+const API_BASE = "/api"; 
 
 export default function WhatIfDemo() {
   const [currentMode, setCurrentMode] = useState("motorcycle");
@@ -36,15 +36,10 @@ export default function WhatIfDemo() {
     }
   };
 
-// ... (WhatIfDemo.jsx)
-
   return (
-    // 💡 為了讓排版好看，我們把外層 div 換成 React.Fragment (<>...</>)
-    //    這樣它就不會繼承 .app-container div 的方塊樣式
     <> 
       <h2>🚗 What-if 減碳模擬</h2>
       
-      {/* 💡 用 div 包起來，並加上間距 */}
       <div style={{ marginBottom: '12px', textAlign: 'left' }}>
         <label>
           現在的交通方式：
@@ -100,6 +95,6 @@ export default function WhatIfDemo() {
           </p>
         </div>
       )}
-    </> // 💡 結束 React.Fragment
+    </> 
   );
 }
