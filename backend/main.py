@@ -88,3 +88,36 @@ def create_activity(req: ActivityReq):
 @app.get("/activities")
 def list_activities():
     return activities_db
+
+# ----------------------
+# What-if 模擬（交通）
+# ----------------------
+class WhatIfReq(BaseModel):
+    current_mode: str
+    current_km: float
+    new_mode: str
+    new_km: float
+
+# 假設排放因子 (kg CO2e/km)
+EF["transport"] = {
+    "car": 0.18,
+    "motorcycle": 0.10,
+    "metro": 0.02,
+    "bike": 0.0,
+    "walk": 0.0
+}
+
+@app.post("/simulate/what-if")
+def simulate_what_if(req: WhatIfReq):
+    current_ef = EF["transport"].get(req.current_mode, 0.0)
+    new_ef = EF["transport"].get(req.new_mode, 0.0)
+
+    current_co2 = round(req.current_km * current_ef, 6)
+    new_co2 = round(req.new_km * new_ef, 6)
+    reduction = round(current_co2 - new_co2, 6)
+
+    return {
+        "current_co2": current_co2,
+        "new_co2": new_co2,
+        "reduction": reduction
+    }

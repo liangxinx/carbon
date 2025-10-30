@@ -19,7 +19,7 @@
 
 /* CarbonEstimateDemo 的內層容器 */
 .app-container div {
-  background: #2a2a2a;
+  background: #ffffff;
   border-radius: 12px;
   padding: 24px 32px;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -27,8 +27,8 @@
 
 /* 按鈕樣式 */
 button {
-  background-color: #4caf50;
-  color: white;
+  background-color: #97dbc3;
+  color: rgb(5, 0, 0);
   border: none;
   padding: 8px 16px;
   margin-right: 10px;
@@ -38,11 +38,11 @@ button {
 }
 
 button:hover {
-  background-color: #66bb6a;
+  background-color: #eef4ac;
 }
 
 button:disabled {
-  background-color: #555;
+  background-color: hsl(180, 55%, 61%);
   cursor: not-allowed;
 }
 
@@ -59,7 +59,7 @@ input, select {
   padding: 4px 8px;
   border-radius: 4px;
   border: 1px solid #888;
-  background-color: #333;
+  background-color: #3a6a79;
   color: #eee;
 }
 .form-row {
@@ -79,3 +79,10 @@ input, select {
   display: inline-block; /* 確保不佔滿整行 */
   width: auto;           /* 依內容寬度 */
 }
+
+/* .food-demo, .whatif-demo {
+  background: #fffdfd;
+  border-radius: 12px;
+  padding: 24px 32px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+} */
