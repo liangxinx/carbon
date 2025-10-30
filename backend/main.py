@@ -1,61 +1,90 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import csv
+from typing import Dict, Any
 from collections import defaultdict
+import csv
 
 app = FastAPI()
 
-EF = defaultdict(dict) 
+# ----------------------
+# CORS 設定
+# ----------------------
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+]
 
-# --- 讀取 CSV 數據並填充 EF 字典（只關注 'food' 類別）---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,       # 允許的前端來源
+    allow_credentials=True,
+    allow_methods=["*"],         # 允許 GET, POST, PUT, DELETE…
+    allow_headers=["*"],         # 允許所有標頭
+)
+
+# ----------------------
+# 暫存活動紀錄
+# ----------------------
+activities_db = []
+next_activity_id = 1  # 模擬自動增加的 ID
+
+# ----------------------
+# 讀取 CSV 排放因子（food）
+# ----------------------
+EF = defaultdict(dict)
 try:
-    with open('C:\\carbon\\emission_factors.csv', 'r', encoding='utf-8') as file:
+    with open('emission_factors.csv', 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
             category = row['category']
             key = row['key']
             value = float(row['value'])
-            
-            # 確保只讀取 'food' 類別的數據
             if category == "food":
                 EF[category][key] = value
-            # 如果之後要支持其他類別，可以在這裡擴展
 except FileNotFoundError:
-    print("Error: emission_factors.csv not found. Please make sure it's in the same directory.")
-    # 如果文件不存在，EF 字典將會是空的，後續計算會返回 0
-except ValueError as e:
-    print(f"Error parsing CSV value: {e}. Please check data format.")
+    print("⚠️ emission_factors.csv not found. Please put it in backend folder.")
 
-# --- Pydantic 模型定義 for Food ---
+# ----------------------
+# Pydantic 模型
+# ----------------------
 class FoodReq(BaseModel):
-    item: str  # 例如: "beef", "chicken", "vegetable"
-    amount_kg: float # 食物重量，單位公斤
+    item: str
+    amount_kg: float
 
-# --- FastAPI 端點定義 ---
+class ActivityReq(BaseModel):
+    user_id: int
+    type: str
+    payload: Dict[str, Any]
+    kg_co2e: float
 
+# ----------------------
+# API
+# ----------------------
 @app.get("/health")
 def health():
-    """
-    健康檢查端點，返回服務狀態和排放係數版本。
-    """
-    return {"ok": True, "ef_version": "2025.1"} # 硬編碼版本號，或從數據中提取
+    return {"ok": True, "ef_version": "2025.1"}
 
-@app.post("/estimate/food") # 新的端點名稱
+@app.post("/estimate/food")
 def estimate_food(req: FoodReq):
-    """
-    計算指定食物種類和重量的碳排放量。
-    """
-    # 從 EF 字典的 'food' 類別中獲取對應的排放係數
-    # 如果找不到該食物，默認為 0.0
     ef = EF["food"].get(req.item, 0.0)
-    
-    # 計算碳排放量
     kg_co2e = round(req.amount_kg * ef, 6)
-    
-    # 返回計算結果以及輸入參數
-    return {
-        "kg_co2e": kg_co2e,
-        "item": req.item,
-        "amount_kg": req.amount_kg,
-        "ef": ef
+    return {"kg_co2e": kg_co2e, "item": req.item, "amount_kg": req.amount_kg, "ef": ef}
+
+@app.post("/activities/create")
+def create_activity(req: ActivityReq):
+    global next_activity_id
+    activity = {
+        "activity_id": next_activity_id,
+        "user_id": req.user_id,
+        "type": req.type,
+        "payload": req.payload,
+        "kg_co2e": req.kg_co2e,
     }
+    activities_db.append(activity)
+    next_activity_id += 1
+    return {"status": "success", "activity_id": activity["activity_id"]}
+
+@app.get("/activities")
+def list_activities():
+    return activities_db
