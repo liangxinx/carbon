@@ -1,11 +1,11 @@
 import { useState } from "react";
 import WhatIfDemo from "./WhatIfDemo";
 import { getSuggestions } from "./getSuggestions.jsx";
-
+import ChallengesPage from "./ChallengesPage.jsx";
 const API_BASE = "/api";
 
 export default function App() {
-  const [view, setView] = useState("food"); 
+  const [view, setView] = useState("food");
   const [item, setItem] = useState("vegetable");
   const [amountKg, setAmountKg] = useState(0.5);
   const [result, setResult] = useState(null);
@@ -91,6 +91,7 @@ export default function App() {
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         <button onClick={() => setView("food")}>🥦 食物碳排試算</button>
         <button onClick={() => setView("whatif")}>🚗 What-if 減碳模擬</button>
+        <button onClick={() => setView("challenge")}>🏆 挑戰卡</button>
       </div>
 
       {view === "food" ? (
@@ -148,9 +149,11 @@ export default function App() {
             </div>
           )}
         </div>
-      ) : (
+      ) : view === "whatif" ? (
         <WhatIfDemo />
-      )}
+      ) : view === "challenge" ? (
+        <ChallengesPage />
+      ) : null}
     </div>
   );
 }
