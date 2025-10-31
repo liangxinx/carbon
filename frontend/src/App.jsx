@@ -86,7 +86,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ maxWidth: 420, margin: "0 auto" }}>
+    <div style={{ maxWidth: 520, margin: "0 auto" }}>
       {/* 切換按鈕 */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         <button onClick={() => setView("food")}>🥦 食物碳排試算</button>
